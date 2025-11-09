@@ -19,9 +19,58 @@ async function processImage(imagePath, fileName) {
 
     const image = await Jimp.read(imagePath);
 
-    image.resize({ w: 100 })
+    const tasks = [
+        {
+            name: 'thumbnail',
+            operation: async () => {
+                const cloned = image.clone()
+                image.resize({ w: 150, h: 150 })
+                await cloned.write(path.join(outputSubDirPath, 'thumbnail.jpg'))
+            }
+        },
+        {
+            name: 'medium',
+            operation: async () => {
+                const cloned = image.clone()
+                image.resize({ w: 600, h: 600 })
+                await cloned.write(path.join(outputSubDirPath, 'medium.jpg'))
+            }
+        },
+        {
+            name: 'large',
+            operation: async () => {
+                const cloned = image.clone()
+                image.resize({ w: 1200, h: 1200 })
+                await cloned.write(path.join(outputSubDirPath, 'large.jpg'))
+            }
+        },
+        {
+            name: 'grayscale',
+            operation: async () => {
+                const cloned = image.clone()
+                // image.resize({ w: 1200, h: 1200 })
+                cloned.greyscale();
+                await cloned.write(path.join(outputSubDirPath, 'grayscale.jpg'))
+            }
+        },
+        {
+            name: 'blur',
+            operation: async () => {
+                const cloned = image.clone()
+                // image.resize({ w: 1200, h: 1200 })
+                cloned.blur(5);
+                await cloned.write(path.join(outputSubDirPath, 'blur.jpg'))
+            }
+        },
+    ]
 
-    await image.write(path.join(outputSubDirPath, 'resize.jpg'))
+
+    // image.resize({ w: 100 })
+
+    for (const task of tasks) {
+        await task.operation();
+    }
+
 
 
 }
@@ -34,11 +83,22 @@ async function main() {
     console.log(files);
 
 
+    const startTime = Date.now();
+
     for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
         const filePath = path.join(INPUT_DIR, file)
         await processImage(filePath, file)
     }
+
+
+    const totalTime = Date.now() - startTime;
+
+    console.log('='.repeat(30));
+    console.log('Normal Processing: ');
+    console.log('='.repeat(30));
+    console.log(`Total time: ${totalTime}ms (${(totalTime / 1000).toFixed(2)}s)`);
+    console.log('='.repeat(30));
 
 
     // await readdir()
