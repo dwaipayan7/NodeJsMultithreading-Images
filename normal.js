@@ -2,6 +2,7 @@ import { Jimp } from 'jimp'
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { mkdir, readdir } from 'fs/promises'
+import { log } from 'console';
 
 
 const __filename = fileURLToPath(import.meta.url)
@@ -89,6 +90,8 @@ async function main() {
         const file = imageFiles[i];
         const filePath = path.join(INPUT_DIR, file)
         await processImage(filePath, file)
+        console.log(`${fileName} Processed!`);
+
     }
 
 
@@ -98,6 +101,7 @@ async function main() {
     console.log('Normal Processing: ');
     console.log('='.repeat(30));
     console.log(`Total time: ${totalTime}ms (${(totalTime / 1000).toFixed(2)}s)`);
+    console.log(`Average time: ${totalTime / imageFiles.length}`);
     console.log('='.repeat(30));
 
 
